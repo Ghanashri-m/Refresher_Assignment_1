@@ -80,16 +80,16 @@ function ResumeInputForm() {
 
     // Education fields
     const [educationDetails, setEducationDetails] = useState([
-        {cname: '', sname: '', course: '', fromMonth: 'Starting Date', toMonth: 'Ending Date'},
-        {cname: '', sname: '', course: '', fromMonth: 'Starting Date', toMonth: 'Ending Date'},
-        {cname: '', sname: '', course: '', fromMonth: 'Starting Date', toMonth: 'Ending Date'}
+        {cname: '', sname: '', course: '', fromMonth: '', toMonth: ''},
+        {cname: '', sname: '', course: '', fromMonth: '', toMonth: ''},
+        {cname: '', sname: '', course: '', fromMonth: '', toMonth: ''}
     ]);
 
     // Work Experience fields
     const [workExpDetails, setWorkExpDetails] = useState([
-        {designation: '', company: '', responsibilities: '', startMonth: 'Starting Date', endMonth: 'Ending Date', presentWork: false},
-        {designation: '', company: '', responsibilities: '', startMonth: 'Starting Date', endMonth: 'Ending Date', presentWork: false},
-        {designation: '', company: '', responsibilities: '', startMonth: 'Starting Date', endMonth: 'Ending Date', presentWork: false}
+        {designation: '', company: '', responsibilities: '', startMonth: '', endMonth: '', presentWork: false},
+        {designation: '', company: '', responsibilities: '', startMonth: '', endMonth: '', presentWork: false},
+        {designation: '', company: '', responsibilities: '', startMonth: '', endMonth: '', presentWork: false}
     ]);
 
     // Profile image
@@ -114,7 +114,7 @@ function ResumeInputForm() {
     
     // Ensure that form is cleared on page refresh
     window.onload = function() {
-        var reloading = sessionStorage.getItem("reloading");
+        const reloading = sessionStorage.getItem("reloading");
         if (reloading) {
             sessionStorage.removeItem("reloading");
             clearAll();
@@ -122,13 +122,12 @@ function ResumeInputForm() {
     }
 
     // Additional validations before submitting the form
-    const checkValidity = () => {    
+    const checkValidity = () => {
         const validity = idList.map((item, index) => {
             if (!document.getElementById(item).validity.valid || !selectedHobbies.length || !selectedSkills.length || !isImage || checkDates()) {
                 return false;
-            } else {
-                return true;
             }
+            return true;
         });
         return validity.some((item, index) => {
             return item === false;
@@ -140,7 +139,7 @@ function ResumeInputForm() {
         educationDetails.map((element, index) => {
             if (element.cname.length > 0 && !(element.fromMonth || element.toMonth)) {
                 flag = true;
-            } else if (element.cname.length > 0 && element.fromMonth && element.toMonth && element.fromMonth > element.toMonth) {
+            } else if (element.cname.length > 0 && element.fromMonth && element.toMonth && ((element.fromMonth > element.toMonth) || element.toMonth > 2021)) {
                 flag = true;
             }
             return 0;
@@ -163,7 +162,7 @@ function ResumeInputForm() {
                 if (element.designation.length > 0 && (!(element.startMonth || element.endMonth) || (isNaN(element.startMonth || isNaN(element.endMonth))))) {
                     flag = true;
                 }
-                if (element.designation.length > 0 && element.startMonth && element.endMonth && element.startMonth > element.endMonth) {
+                if (element.designation.length > 0 && element.startMonth && element.endMonth && ((element.startMonth > element.endMonth) || (element.endMonth > 2021))) {
                     flag = true;
                 }
             }
@@ -216,12 +215,12 @@ function ResumeInputForm() {
             if (content.style.display === "flex") {
                 coll.lastChild.className="fas fa-caret-down"
                 content.style.display = "none";
-                coll.classList.toggle("marginBottom");
+                // coll.classList.toggle("marginBottom");
             } else {
                 content.style.display = "flex";
                 coll.lastChild.className="fas fa-caret-up"
                 content.style.marginBottom = "20px";
-                coll.classList.toggle("marginBottom");
+                // coll.classList.toggle("marginBottom");
             }
     }
 
@@ -252,7 +251,7 @@ function ResumeInputForm() {
         return (
             <>
                 <div className="form-group">
-                    <input type="tel" value={phone} onChange={(e) => {setPhone(e.target.value)}} name="telephone" id="phone" placeholder="Phone Number (EX: 669-306-1518)" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required />
+                    <input type="tel" value={phone}onChange={(e) => {setPhone(e.target.value)}} name="telephone" id="phone" placeholder="Phone Number (EX: 669-306-1518)" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required />
                     <span style={{color: 'red', alignSelf: 'baseline'}}>*</span>
                 </div>
                 <div className="form-group">
@@ -290,27 +289,29 @@ function ResumeInputForm() {
                 </div>
                 <div className="form-group"> 
                     <Datetime
-                        value={educationDetails[id-1].fromMonth.toString()}
+                        // value={educationDetails[id-1].fromMonth.toString()}
+                        inputProps={{name: `fromMonth${id}`, placeholder: 'Starting Date', value: educationDetails[id-1].fromMonth.toString()}}
                         timeFormat={false}
-                        name={`fromMonth${id}`}
+                        // name={`fromMonth${id}`}
                         id={`fromMonth${id}`}
                         dateFormat="YYYY"
                         closeOnSelect
-                        onChange={(date) => {
-                        onChangeEducationFields(date._d.getFullYear() , 'fromMonth', id);
+                        onChange={(date) => { if(date._d) {
+                        onChangeEducationFields(date._d.getFullYear() , 'fromMonth', id);}
                     }}/>
                     <span style={{color: 'red', alignSelf: 'baseline'}}>*</span>
                 </div>
                 <div className="form-group">
                     <Datetime
-                        value={educationDetails[id-1].toMonth.toString()}
+                        // value={educationDetails[id-1].toMonth.toString()}
                         timeFormat={false}
-                        name={`toMonth${id}`}
+                        inputProps={{name: `toMonth${id}`, placeholder: 'Ending Date', value: educationDetails[id-1].toMonth.toString()}}
+                        // name={`toMonth${id}`}
                         id={`toMonth${id}`}
                         dateFormat="YYYY"
                         closeOnSelect
-                        onChange={(date) => {
-                        onChangeEducationFields(date._d.getFullYear() , 'toMonth', id);
+                        onChange={(date) => { if(date._d) {
+                        onChangeEducationFields(date._d.getFullYear() , 'toMonth', id);}
                     }}/>
                     <span style={{color: 'red', alignSelf: 'baseline'}}>*</span>
                 </div>
@@ -340,9 +341,10 @@ function ResumeInputForm() {
                 </div>
                 <div className="form-group"> 
                     <Datetime
-                        value={workExpDetails[id-1].startMonth.toString()}
+                        // value={workExpDetails[id-1].startMonth.toString()}
                         timeFormat={false}
-                        name={`startMonth${id}`}
+                        inputProps={{name: `startMonth${id}`, placeholder: 'Starting Date', value: workExpDetails[id-1].startMonth.toString()}}
+                        // name={`startMonth${id}`}
                         id={`startMonth${id}`}
                         dateFormat="YYYY"
                         closeOnSelect
@@ -359,8 +361,9 @@ function ResumeInputForm() {
                     {!workExpDetails[id-1].presentWork && <>
                         <Datetime
                             timeFormat={false}
-                            value={workExpDetails[id-1].endMonth.toString()}
-                            name={`endMonth${id}`}
+                            inputProps={{name: `endMonth${id}`, placeholder: 'Ending Date', value: workExpDetails[id-1].endMonth.toString()}}
+                            // value={workExpDetails[id-1].endMonth.toString()}
+                            // name={`endMonth${id}`}
                             id={`endMonth${id}`}
                             dateFormat="YYYY"
                             closeOnSelect
@@ -377,27 +380,25 @@ function ResumeInputForm() {
 
     const generate = async (e) => {
         const coll = document.getElementsByClassName("collapsible");
-
+        
         for (let i = 0; i < coll.length; i++) {
             coll[i].nextElementSibling.style.display = "flex";
             coll[i].nextElementSibling.style.marginBottom = "20px";
-            coll[i].classList.toggle("marginBottom");
         }
-
         const isInvalid = await checkValidity();
 
         if (!isInvalid) {
             const formData = [{
-                fname: fname,
-                lname: lname,
-                role: role,
-                objective: objective,
-                phone: phone,
-                email: email,
-                website: website,
-                address: address,
-                educationDetails: educationDetails,
-                workExpDetails: workExpDetails,
+                fname,
+                lname,
+                role,
+                objective,
+                phone,
+                email,
+                website,
+                address,
+                educationDetails,
+                workExpDetails,
                 skills: selectedSkills,
                 hobbies: selectedHobbies,
                 image
@@ -406,15 +407,29 @@ function ResumeInputForm() {
             setShowResume(true);
 
         } else {
-            alert("Please fill the form correctly (Fill all the required fields, select atleast 1 hobby, 1 skill, and profile picture, ensure that from years are less than or equal to end years)");
+            alert("Please fill the form correctly (Fill all the required fields, select atleast 1 hobby,1 skill, and profile picture, ensure that from years are less than or equal to end years and end year not greater than current year)");
             clearAll();
-            window.location.reload(false);
         }
     }
     
     const clearAll = () => {
         idList = ['fname', 'lname', 'role', 'objective', 'phone', 'email',
         'website', 'address'];
+
+        for (let i = 1; i <= 3; i++) {
+            if (document.getElementsByName(`fromMonth${i}`)) {
+                document.getElementsByName(`fromMonth${i}`).value = ''
+            }
+            if (document.getElementsByName(`startMonth${i}`)) {
+                document.getElementsByName(`startMonth${i}`).value = ''
+            }
+            if (document.getElementsByName(`toMonth${i}`)) {
+                document.getElementsByName(`toMonth${i}`).value = ''
+            }
+            if (document.getElementsByName(`endMonth${i}`)) {
+                document.getElementsByName(`endMonth${i}`).value = ''
+            }
+        }
 
         setSelectedHobbies([]);
         setSelectedSkills([]);
@@ -442,16 +457,16 @@ function ResumeInputForm() {
 
         // Education fields
         setEducationDetails([
-            {cname: '', sname: '', course: '', fromMonth: 'Starting Date', toMonth: 'Ending Date'},
-            {cname: '', sname: '', course: '', fromMonth: 'Starting Date', toMonth: 'Ending Date'},
-            {cname: '', sname: '', course: '', fromMonth: 'Starting Date', toMonth: 'Ending Date'}
+            {cname: '', sname: '', course: '', fromMonth: '', toMonth: ''},
+            {cname: '', sname: '', course: '', fromMonth: '', toMonth: ''},
+            {cname: '', sname: '', course: '', fromMonth: '', toMonth: ''}
         ]);
 
         // Work Experience fields
         setWorkExpDetails([
-            {designation: '', company: '', responsibilities: '', startMonth: 'Starting Date', endMonth: 'Ending Date', presentWork: false},
-            {designation: '', company: '', responsibilities: '', startMonth: 'Starting Date', endMonth: 'Ending Date', presentWork: false},
-            {designation: '', company: '', responsibilities: '', startMonth: 'Starting Date', endMonth: 'Ending Date', presentWork: false}
+            {designation: '', company: '', responsibilities: '', startMonth: '', endMonth: '', presentWork: false},
+            {designation: '', company: '', responsibilities: '', startMonth: '', endMonth: '', presentWork: false},
+            {designation: '', company: '', responsibilities: '', startMonth: '', endMonth: '', presentWork: false}
         ]);
 
         if (document.getElementById("img")) {
@@ -558,7 +573,7 @@ function ResumeInputForm() {
                     </div>
                 </form>
             </div> : <ResumeTemplate generateNew={clearAll} />}
-            <div class="footer">
+            <div className="footer">
                 <p>Copyright © since 2021 by Ghanashri M</p>
             </div>
         </div>

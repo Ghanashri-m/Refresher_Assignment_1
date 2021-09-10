@@ -38,9 +38,6 @@ function ResumeTemplate({generateNew}) {
 		return formData[0].hobbies.includes(item.hobby);
 	});
 
-	console.log(latestHobbies);
-	console.log(latestSkills);
-
 	useEffect(() => {
 		document.getElementById('profileImage').style.backgroundImage = `url(data:image/png;base64,${formData[0]?.image})`;
 	}, [])
